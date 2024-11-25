@@ -106,6 +106,14 @@
                 "define_connect":"1",
                 "modes":["qmi","gobinet","ecm","mbim","rndis","ncm"]
             },
+            "ec200a":{
+                "manufacturer_id":"2c7c",
+                "manufacturer":"quectel",
+                "platform":"asrmicro",
+                "data_interface":"usb",
+                "define_connect":"1",
+                "modes":["rndis"]
+            },
             "fm650-cn":{
                 "manufacturer_id":"2cb7",
                 "manufacturer":"fibocom",
@@ -246,6 +254,10 @@
                 "mediatek":{
                     "vendor_id":["2c7c"],
                     "product_id":["0700","7001","7003"]
+                },
+                "asrmicro":{
+                    "vendor_id":["2c7c"],
+                    "product_id":["6005"]
                 }
             },
             "fibocom":{
