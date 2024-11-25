@@ -299,40 +299,27 @@ quectel_get_voltage()
 
 #获取温度
 # $1:AT串口
-quectel_get_temperature()
-{
+quectel_get_temperature() {
     local at_port="$1"
     
-    #Temperature（温度）
-    at_command="AT+QTEMP"
+    # 定义 AT 命令
+    local at_command="AT+QTEMP"
 
-    local line=1
-    while true; do
-        response=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "+QTEMP:" | sed -n "${line}p" | awk -F'"' '{print $4}')
-        [ $response -gt 0 ] && break
-        line=$((line+1))
-    done
+    # 发送 AT 命令并获取响应
+    local response=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "+QTEMP:")
 
+    # 提取第一个逗号分隔的数字作为温度值
+    local temperature_value=$(echo "$response" | cut -d':' -f2 | cut -d',' -f1 | tr -d ' ' | grep -o -i '[0-9]\+')
+
+    # 格式化温度值
     local temperature
-	if [ -n "$response" ]; then
-		temperature="${response}$(printf "\xc2\xb0")C"
-	fi
+    if [ -n "$temperature_value" ]; then
+        temperature="${temperature_value}$(printf "\xc2\xb0")C"
+    else
+        temperature="Temperature not available"
+    fi
 
-    # response=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "+QTEMP:")
-    # QTEMP=$(echo $response | grep -o -i "+QTEMP: [0-9]\{1,3\}")
-    # if [ -z "$QTEMP" ]; then
-    #     QTEMP=$(echo $response | grep -o -i "+QTEMP:[ ]\?\"XO[_-]THERM[_-][^,]\+,[\"]\?[0-9]\{1,3\}" | grep -o "[0-9]\{1,3\}")
-    # fi
-    # if [ -z "$QTEMP" ]; then
-    #     QTEMP=$(echo $response | grep -o -i "+QTEMP:[ ]\?\"MDM-CORE-USR.\+[0-9]\{1,3\}\"" | cut -d\" -f4)
-    # fi
-    # if [ -z "$QTEMP" ]; then
-    #     QTEMP=$(echo $response | grep -o -i "+QTEMP:[ ]\?\"MDMSS.\+[0-9]\{1,3\}\"" | cut -d\" -f4)
-    # fi
-    # if [ -n "$QTEMP" ]; then
-    #     CTEMP=$(echo $QTEMP | grep -o -i "[0-9]\{1,3\}")$(printf "\xc2\xb0")"C"
-    # fi
-
+    # 输出温度
     echo "${temperature}"
 }
 
