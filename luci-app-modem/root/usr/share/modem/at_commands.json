@@ -70,6 +70,17 @@
 				{"切换为USB3.1 Gen1（5Gbps） > AT+QCFG=\"usbspeed\",\"311\"":"AT+QCFG=\"usbspeed\",\"311\""},
 				{"切换为USB3.1 Gen1（10Gbps） > AT+QCFG=\"usbspeed\",\"312\"":"AT+QCFG=\"usbspeed\",\"312\""},
 				{"重置模组 > AT+QCFG=\"ResetFactory\"":"AT+QCFG=\"ResetFactory\""}
+			],
+			"asrmicro":[
+				{"查询当前拨号模式 > AT+QCFG=\"usbnet\"":"AT+QCFG=\"usbnet\""},
+				{"QMI/GobiNet拨号模式 > AT+QCFG=\"usbnet\",0":"AT+QCFG=\"usbnet\",0"},
+				{"ECM拨号模式 > AT+QCFG=\"usbnet\",1":"AT+QCFG=\"usbnet\",1"},
+				{"RNDIS拨号模式 > AT+QCFG=\"usbnet\",3":"AT+QCFG=\"usbnet\",3"},
+				{"工厂模式查询 > AT*PROD?":"AT*PROD?"},
+				{"进入工厂模式 > AT*PROD=1":"AT*PROD=1"},
+				{"查询模组IMEI > AT+EGMR=0,7":"AT+EGMR=0,7"},
+				{"更改模组IMEI > AT+EGMR=1,7,\"IMEI\"":"AT+EGMR=1,7,\"在此设置IMEI\""},
+				{"退出工厂模式 > AT*PROD=0":"AT*PROD=0"}
 			]
 		},
 		"fibocom":{
