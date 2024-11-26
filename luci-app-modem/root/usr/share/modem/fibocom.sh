@@ -84,14 +84,15 @@ fibocom_get_mode()
 {
     local at_port="$1"
     local platform="$2"
+    
+    # 如果平台是 intel-xmm，则直接返回 ncm 模式
+    if [ "$platform" = "intel-xmm" ]; then
+        echo "ncm"
+        return
+    fi
 
     at_command="AT+GTUSBMODE?"
     local mode_num=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "+GTUSBMODE:" | sed 's/+GTUSBMODE: //g' | sed 's/\r//g')
-
-    if [ -z "$mode_num" ]; then
-        echo "unknown"
-        return
-    fi
 
     #获取芯片平台
 	if [ -z "$platform" ]; then
@@ -104,6 +105,12 @@ fibocom_get_mode()
             fi
         done
 	fi
+	
+    # 如果 mode_num 为空且平台不是 intel-xmm，则输出 unknown
+    if [ -z "$mode_num" ]; then
+        echo "unknown"
+        return
+    fi
 
     local mode
     case "$platform" in
