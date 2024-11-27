@@ -168,6 +168,44 @@ rndis_dial()
     fi
 }
 
+#NCM拨号
+# $1:AT串口
+# $2:制造商
+# $3:平台
+# $4:连接定义
+# $5:模组序号
+ncm_dial()
+{
+    local at_port="$1"
+    local manufacturer="$2"
+    local platform="$3"
+    local define_connect="$4"
+    local modem_no="$5"
+
+    #手动拨号（广和通l860-GL）
+    if [ "$manufacturer" = "fibocom" ] && [ "$platform" = "intel-xmm" ]; then
+
+        local at_command="AT+CGACT=1,${define_connect}"
+        #打印日志
+        dial_log "${at_command}" "${MODEM_RUNDIR}/modem${modem_no}_dial.cache"
+        #激活并拨号
+        at "${at_port}" "${at_command}"
+        
+        local at_command="AT+XDATACHANNEL=1,1,\"/USBCDC/0\",\"/USBHS/NCM/0\",2,1"
+	dial_log "${at_command}" "${MODEM_RUNDIR}/modem${modem_no}_dial.cache"
+	at "${at_port}" "${at_command}"
+	
+	local at_command="AT+CGDATA=\"M-RAW_IP\",1"
+	dial_log "${at_command}" "${MODEM_RUNDIR}/modem${modem_no}_dial.cache"
+	at "${at_port}" "${at_command}"
+	
+        sleep 3s
+    else
+        #拨号
+        ecm_dial "${at_port}" "${manufacturer}" "${define_connect}"
+    fi
+}
+
 #Modem Manager拨号
 # $1:接口名称
 # $2:连接定义
@@ -252,6 +290,7 @@ modem_network_task()
                 "ecm") ecm_dial "${at_port}" "${manufacturer}" "${define_connect}" ;;
                 "rndis") rndis_dial "${at_port}" "${manufacturer}" "${platform}" "${define_connect}" "${modem_no}" ;;
                 "modemmanager") modemmanager_dial "${interface_name}" "${define_connect}" ;;
+                "ncm") ncm_dial "${at_port}" "${manufacturer}" "${platform}" "${define_connect}" "${modem_no}" ;;
                 *) ecm_dial "${at_port}" "${manufacturer}" "${define_connect}" ;;
             esac
 
@@ -268,6 +307,7 @@ modem_network_task()
                 "ecm") ecm_dial "${at_port}" "${manufacturer}" "${define_connect}" ;;
                 "rndis") rndis_dial "${at_port}" "${manufacturer}" "${platform}" "${define_connect}" "${modem_no}" ;;
                 "modemmanager") modemmanager_dial "${interface_name}" "${define_connect}" ;;
+                "ncm") ncm_dial "${at_port}" "${manufacturer}" "${platform}" "${define_connect}" "${modem_no}" ;;
                 *) ecm_dial "${at_port}" "${manufacturer}" "${define_connect}" ;;
             esac
             
