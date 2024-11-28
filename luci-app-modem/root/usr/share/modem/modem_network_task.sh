@@ -340,7 +340,7 @@ modem_network_task()
             ipv4_cache="${ipv4}"
 
             #重新设置网络接口（广和通FM350-GL）
-            if [ "$manufacturer" = "fibocom" ] && [ "$platform" = "mediatek" ]; then
+            if [ "$manufacturer" = "fibocom" ] && ([ "$platform" = "mediatek" ] || [ "$platform" = "intel-xmm" ]); then
                 reset_network_interface "${at_port}" "${define_connect}" "${modem_no}"
                 sleep 3s
             fi
