@@ -184,17 +184,31 @@ ncm_dial()
 
     #手动拨号（广和通l860-GL）
     if [ "$manufacturer" = "fibocom" ] && [ "$platform" = "intel-xmm" ]; then
-
+    	
+    	#配置PDP上下文
+    	local at_command="AT+CGDCONT=1,\"IPV4V6\",\"\""
+	#打印日志
+        dial_log "${at_command}" "${MODEM_RUNDIR}/modem${modem_no}_dial.cache"
+	at "${at_port}" "${at_command}"
+	
         local at_command="AT+CGACT=1,${define_connect}"
         #打印日志
         dial_log "${at_command}" "${MODEM_RUNDIR}/modem${modem_no}_dial.cache"
-        #激活并拨号
+        #激活PDP上下文
         at "${at_port}" "${at_command}"
         
+        #配置DNS服务器
+        local at_command="AT+XDNS=1,1"
+        #打印日志
+        dial_log "${at_command}" "${MODEM_RUNDIR}/modem${modem_no}_dial.cache"
+        at "${at_port}" "${at_command}"
+        #配置数据通道
         local at_command="AT+XDATACHANNEL=1,1,\"/USBCDC/0\",\"/USBHS/NCM/0\",2,1"
-	dial_log "${at_command}" "${MODEM_RUNDIR}/modem${modem_no}_dial.cache"
-	at "${at_port}" "${at_command}"
-	
+        #打印日志
+        dial_log "${at_command}" "${MODEM_RUNDIR}/modem${modem_no}_dial.cache"
+        at "${at_port}" "${at_command}"
+        
+        #启动数据传输
 	local at_command="AT+CGDATA=\"M-RAW_IP\",1"
 	dial_log "${at_command}" "${MODEM_RUNDIR}/modem${modem_no}_dial.cache"
 	at "${at_port}" "${at_command}"

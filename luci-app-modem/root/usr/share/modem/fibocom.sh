@@ -4,24 +4,57 @@
 #脚本目录
 SCRIPT_DIR="/usr/share/modem"
 
+# 预设函数（特定于 Intel XMM）
+intel_xmm_presets()
+{
+    local at_port=$1
+    
+    # 这里可以添加特定于 Intel XMM 的 AT 命令预设
+    # 例如：
+    # at_command='AT+SOME_XMM_SPECIFIC_COMMAND=1'
+    # sh "${SCRIPT_DIR}/modem_at.sh" "$at_port" "$at_command"
+    at_command='AT+CMEE=2'  #设置错误报告格式
+    sh "${SCRIPT_DIR}/modem_at.sh" "$at_port" "$at_command"
+    
+    at_command="AT+XDATACHANNEL=1,1,\"/USBCDC/0\",\"/USBHS/NCM/0\",2,1"  #配置数据通道
+    sh "${SCRIPT_DIR}/modem_at.sh" "$at_port" "$at_command"
+ 
+    # 注意：这里应该添加所有特定于 XMM 的配置命令
+}
+
 #预设
 fibocom_presets()
 {
-    #设置IPv6地址格式
-	at_command='AT+CGPIAF=1,0,0,0'
-	sh "${SCRIPT_DIR}/modem_at.sh" "$at_port" "$at_command"
+    local modem_number=$(uci -q get modem.@global[0].modem_number)
+    for i in $(seq 0 $((modem_number-1))); do
+        local at_port_tmp=$(uci -q get modem.modem$i.at_port)
+        if [ "$at_port" = "$at_port_tmp" ]; then
+            local platform=$(uci -q get modem.modem$i.platform)
+            break
+        fi
+    done
+    
+    if [ "$platform" = "intel-xmm" ]; then
+        # 如果 platform 是 intel-xmm，则调用 intel_xmm_presets
+        intel_xmm_presets "$at_port"
+    else
+        # 否则，执行原始代码
+        # 设置IPv6地址格式
+        at_command='AT+CGPIAF=1,0,0,0'
+        sh "${SCRIPT_DIR}/modem_at.sh" "$at_port" "$at_command"
 
-    #自动DHCP
-	at_command='AT+GTAUTODHCP=1'
-	sh "${SCRIPT_DIR}/modem_at.sh" "$at_port" "$at_command"
+        # 自动DHCP
+        at_command='AT+GTAUTODHCP=1'
+        sh "${SCRIPT_DIR}/modem_at.sh" "$at_port" "$at_command"
 
-	#启用IP直通
-	at_command='AT+GTIPPASS=1,1'
-	sh "${SCRIPT_DIR}/modem_at.sh" "$at_port" "$at_command"
+        # 启用IP直通
+        at_command='AT+GTIPPASS=1,1'
+        sh "${SCRIPT_DIR}/modem_at.sh" "$at_port" "$at_command"
 
-	#启用自动拨号
-	at_command='AT+GTAUTOCONNECT=1'
-	sh "${SCRIPT_DIR}/modem_at.sh" "$at_port" "$at_command"
+        # 启用自动拨号
+        at_command='AT+GTAUTOCONNECT=1'
+        sh "${SCRIPT_DIR}/modem_at.sh" "$at_port" "$at_command"
+    fi
 }
 
 #获取DNS
@@ -358,6 +391,12 @@ fibocom_get_temperature()
         at_command="AT+GTSENRDTEMP=1"
         response=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | grep "+GTSENRDTEMP: " | awk -F',' '{print $2}' | sed 's/\r//g')
         response="${response:0:2}"
+    }
+    
+    [ -z "$response" ] && {
+        #INTEL-XMM
+        at_command="AT+MTSM=1"
+        response=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | grep "+MTSM: " | sed 's/+MTSM: //g' | sed 's/\r//g')
     }
 
     local temperature

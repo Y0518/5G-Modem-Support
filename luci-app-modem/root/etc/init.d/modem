@@ -369,7 +369,11 @@ rndis()
 
 ncm()
 {
-	ecm
+	#拨号
+	procd_open_instance
+	procd_set_param command sh ${SCRIPT_DIR}/modem_network_task.sh "${id}" "${modem_no}" "ncm"
+	procd_set_param respawn
+	procd_close_instance
 }
 
 stop_qmi()
@@ -439,6 +443,8 @@ stop_ecm()
 	elif [ "$manufacturer" = "fibocom" ]; then
 		#联发科平台（广和通FM350-GL）
 		if [ "$platform" = "mediatek" ]; then
+			at_command="AT+CGACT=0,${define_connect}"
+		elif [ "$platform" = "intel-xmm" ]; then
 			at_command="AT+CGACT=0,${define_connect}"
 		else
 			at_command="AT+GTRNDIS=0,${define_connect}"

@@ -681,6 +681,8 @@ m_set_network_config()
 	local net_count="$(find ${physical_path} -name net | wc -l)"
 	if [ "$net_count" = "2" ]; then
 		net_net_interface_path="$(find ${physical_path} -name net | sed -n '2p')"
+	elif [ "$net_count" = "3" ]; then
+		net_net_interface_path="$(find ${physical_path} -name net | sed -n '3p')"
 	fi
 	local network_interface=$(ls ${net_net_interface_path})
 
