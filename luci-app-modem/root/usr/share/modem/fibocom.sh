@@ -542,6 +542,7 @@ fibocom_sim_info()
     [ -z "$iccid" ] && {
     	at_command="AT+CCID"
         iccid=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep -o "+CCID:[ ]*[-0-9]\+" | grep -o "[-0-9]\{1,4\}")
+    }
 }
 
 #获取网络类型
