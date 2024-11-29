@@ -674,15 +674,15 @@ m_set_network_config()
     # fi
 
 	#获取网络接口
-	local net_path="$(find ${physical_path} -name net | sed -n '1p')"
+	local net_path="$(find ${physical_path} -name net | sort -V | sed -n '1p')"
 	local net_net_interface_path="${net_path}"
 
 	#子目录下存在网络接口
 	local net_count="$(find ${physical_path} -name net | wc -l)"
 	if [ "$net_count" = "2" ]; then
-		net_net_interface_path="$(find ${physical_path} -name net | sed -n '2p')"
+		net_net_interface_path="$(find ${physical_path} -name net | sort -V | sed -n '2p')"
 	elif [ "$net_count" = "3" ]; then
-		net_net_interface_path="$(find ${physical_path} -name net | sed -n '3p')"
+		net_net_interface_path="$(find ${physical_path} -name net | sort -V | sed -n '1p')"
 	fi
 	local network_interface=$(ls ${net_net_interface_path})
 
