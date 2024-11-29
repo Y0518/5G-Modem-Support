@@ -535,6 +535,11 @@ fibocom_sim_info()
 	[ -z "$sim_number" ] && {
         imsi=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "+CIMI: " | awk -F'"' '{print $2}')
     }
+    	[ -z "$imsi" ] && { #intel-xmm
+    	at_command="AT+CIMI"
+    # 发送AT命令并直接读取IMSI
+    	imsi=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} "${at_command}" | grep -oP '^\d{15,16}')
+    }
 
     #ICCID（集成电路卡识别码）
     at_command="AT+ICCID"
@@ -1037,7 +1042,9 @@ get_fibocom_info()
     return
 
     # Fibocom_Cellinfo
-
+    if [ "$platform" = "intel-xmm" ]; then
+    	
+    else
     #基站信息
 	OX=$( sh ${SCRIPT_DIR}/modem_at.sh $at_port "AT+CPSI?")
 	rec=$(echo "$OX" | grep "+CPSI:")
@@ -1151,4 +1158,5 @@ get_fibocom_info()
 			PCI="$PCI, "$(echo "$CASV" | cut -d, -f7)
 		done
 	fi
+    fi
 }

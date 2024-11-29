@@ -370,7 +370,12 @@ handle_special_modem_name()
 	[[ "$modem_name" = *"fm350-gl"* ]] && {
 		modem_name="fm350-gl"
 	}
-
+	
+	#FL860-GL LTE Module
+	[[ "$modem_name" = *"l860"* ]] && {
+		modem_name="l860-gl"
+	}
+	
 	#SRM825-PV
 	[[ "$modem_name" = *"srm825-pv"* ]] && {
 		modem_name="srm825"
@@ -472,6 +477,7 @@ m_set_modem_config()
 	[ -z "$modem_name" ] && {
 		local at_command="AT+CGMM?"
    		modem_name=$(at ${at_port} ${at_command} | grep "+CGMM: " | awk -F'"' '{print $2}' | tr 'A-Z' 'a-z')
+   		modem_name="$(handle_special_modem_name ${modem_name})"
 	}
 
 	#获取模组支持列表
@@ -597,6 +603,9 @@ m_set_tty_device()
 
 		#获取ttyUSB
 		local tty_usb=$(find ${physical_path} -type d -name ttyUSB* | sed -n '1p')
+		[ -z "$tty_usb" ] && {
+			local tty_usb=$(find ${physical_path} -type d -name ttyACM* | sed -n '1p')
+		}
 		#不存在tty，退出
 		[ -z "$tty_usb" ] && return
 		local port="/dev/$(basename ${tty_usb})"
@@ -767,6 +776,9 @@ m_set_modem_port()
 	local all_port
 	if [ "$data_interface" = "usb" ]; then
 		all_port=$(find ${physical_path} -name ttyUSB*)
+		[ -z "$all_port" ] && {
+			all_port=$(find ${physical_path} -name ttyACM*)
+		}
 	else
 		local mhi_hwip=$(find ${physical_path} -name mhi_hwip*)
 		if [ -n "$mhi_hwip" ]; then

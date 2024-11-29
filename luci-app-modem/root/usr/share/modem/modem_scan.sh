@@ -66,7 +66,7 @@ modem_scan()
     set_sys_network_config "$sys_network"
     sys_network="$(find /sys/class/net -name wwan*)" #QMI MBIM
     set_sys_network_config "$sys_network"
-    sys_network="$(find /sys/class/net -name eth*)" #RNDIS
+    sys_network="$(find /sys/class/net -name eth* | sort -V)" #RNDIS
     set_sys_network_config "$sys_network"
 
     #PCIE
