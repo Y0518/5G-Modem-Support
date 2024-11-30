@@ -207,6 +207,12 @@ ncm_dial()
 	at "${at_port}" "${at_command}"
 	sleep 0.2
 	
+	#配置支持动态DNS
+	local at_command="AT+XDNS=1,1"
+	dial_log "${at_command}" "${MODEM_RUNDIR}/modem${modem_no}_dial.cache"
+	at "${at_port}" "${at_command}"
+	sleep 0.2
+	
         local at_command="AT+CGACT=1,${define_connect}"
         #打印日志
         dial_log "${at_command}" "${MODEM_RUNDIR}/modem${modem_no}_dial.cache"

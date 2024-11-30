@@ -73,30 +73,51 @@ fibocom_get_dns()
     local public_dns2_ipv4="119.29.29.29"
     local public_dns1_ipv6="2400:3200::1" #下一代互联网北京研究中心：240C::6666，阿里：2400:3200::1，腾讯：2402:4e00::
     local public_dns2_ipv6="2402:4e00::"
+    if [ "$platform"="intel-xmm" ];then
+        # 获取DNS地址
+	at_command="AT+XDNS?"
+	local response=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command})
 
-    #获取DNS地址
-    at_command="AT+GTDNS=${define_connect}"
-    local response=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "+GTDNS: " | grep -E '[0-9]+.[0-9]+.[0-9]+.[0-9]+' | sed -n '1p')
+	# 解析响应
+	local ipv4_dns1=$(echo "${response}" | grep "+XDNS: 1," | awk -F'"' '{print $2}')
+	[ -z "$ipv4_dns1" ] && {
+	    ipv4_dns1="${public_dns1_ipv4}"
+	}
 
-    local ipv4_dns1=$(echo "${response}" | awk -F'"' '{print $2}' | awk -F',' '{print $1}')
-    [ -z "$ipv4_dns1" ] && {
-        ipv4_dns1="${public_dns1_ipv4}"
-    }
+	local ipv4_dns2=$(echo "${response}" | grep "+XDNS: 1," | awk -F'"' '{print $4}')
+	[ -z "$ipv4_dns2" ] && {
+	    ipv4_dns2="${public_dns2_ipv4}"
+	}
 
-    local ipv4_dns2=$(echo "${response}" | awk -F'"' '{print $4}' | awk -F',' '{print $1}')
-    [ -z "$ipv4_dns2" ] && {
-        ipv4_dns2="${public_dns2_ipv4}"
-    }
+	# 如果需要获取IPv6 DNS服务器，可以添加相应的解析逻辑
+	# 由于示例中没有提供IPv6 DNS服务器，这里使用默认值
+	local ipv6_dns1="${public_dns1_ipv6}"
+	local ipv6_dns2="${public_dns2_ipv6}"
+    else
+	#获取DNS地址
+	at_command="AT+GTDNS=${define_connect}"
+	local response=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "+GTDNS: " | grep -E '[0-9]+.[0-9]+.[0-9]+.[0-9]+' | sed -n '1p')
 
-    local ipv6_dns1=$(echo "${response}" | awk -F'"' '{print $2}' | awk -F',' '{print $2}')
-    [ -z "$ipv6_dns1" ] && {
-        ipv6_dns1="${public_dns1_ipv6}"
-    }
+	local ipv4_dns1=$(echo "${response}" | awk -F'"' '{print $2}' | awk -F',' '{print $1}')
+	[ -z "$ipv4_dns1" ] && {
+	    ipv4_dns1="${public_dns1_ipv4}"
+	}
 
-    local ipv6_dns2=$(echo "${response}" | awk -F'"' '{print $4}' | awk -F',' '{print $2}')
-    [ -z "$ipv6_dns2" ] && {
-        ipv6_dns2="${public_dns2_ipv6}"
-    }
+	local ipv4_dns2=$(echo "${response}" | awk -F'"' '{print $4}' | awk -F',' '{print $1}')
+	[ -z "$ipv4_dns2" ] && {
+	    ipv4_dns2="${public_dns2_ipv4}"
+	}
+
+	local ipv6_dns1=$(echo "${response}" | awk -F'"' '{print $2}' | awk -F',' '{print $2}')
+	[ -z "$ipv6_dns1" ] && {
+	    ipv6_dns1="${public_dns1_ipv6}"
+	}
+
+	local ipv6_dns2=$(echo "${response}" | awk -F'"' '{print $4}' | awk -F',' '{print $2}')
+	[ -z "$ipv6_dns2" ] && {
+	    ipv6_dns2="${public_dns2_ipv6}"
+	}
+    fi
 
     dns="{
         \"dns\":{
