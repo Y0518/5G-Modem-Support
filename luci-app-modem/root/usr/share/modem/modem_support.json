@@ -146,6 +146,14 @@
                 "define_connect":"1",
                 "modes":["qmi","gobinet","ecm","mbim","rndis","ncm"]
             },
+            "nl668-cn":{
+                "manufacturer_id":"1508",
+                "manufacturer":"fibocom",
+                "platform":"qualcomm",
+                "data_interface":"usb",
+                "define_connect":"1",
+                "modes":["qmi","ecm"]
+            },
             "l860-gl":{
                 "manufacturer_id":"8087",
                 "manufacturer":"fibocom",
@@ -270,8 +278,8 @@
             },
             "fibocom":{
                 "unisoc":{
-                    "vendor_id":["2cb7","3c93","3763"],
-                    "product_id":["0a04","0a05","0a06","0a07","3c93","ffff"]
+                    "vendor_id":["2cb7","3c93","3763","1508"],
+                    "product_id":["0a04","0a05","0a06","0a07","3c93","ffff","1001"]
                 },
                 "qualcomm":{
                     "vendor_id":["2cb7"],
