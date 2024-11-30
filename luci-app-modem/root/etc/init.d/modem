@@ -444,6 +444,7 @@ stop_ecm()
 		#联发科平台（广和通FM350-GL）
 		if [ "$platform" = "mediatek" ]; then
 			at_command="AT+CGACT=0,${define_connect}"
+		#intel-xmm平台（广和通L860-GL）
 		elif [ "$platform" = "intel-xmm" ]; then
 			at_command="AT+CGACT=0,${define_connect}"
 		else
@@ -458,6 +459,12 @@ stop_ecm()
 	fi
 
 	tmp=$(at "${at_port}" "${at_command}")
+	sleep 0.2
+	[ "$platform" = "intel-xmm" ] && {
+		at_command="AT+XDATACHANNEL=0"
+		tmp=$(at "${at_port}" "${at_command}")
+	}
+	
 }
 
 stop_mbim()
