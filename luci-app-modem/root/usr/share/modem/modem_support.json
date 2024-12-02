@@ -152,7 +152,7 @@
                 "platform":"qualcomm",
                 "data_interface":"usb",
                 "define_connect":"1",
-                "modes":["qmi","ecm"]
+                "modes":["qmi","ecm","rndis"]
             },
             "l860-gl":{
                 "manufacturer_id":"8087",

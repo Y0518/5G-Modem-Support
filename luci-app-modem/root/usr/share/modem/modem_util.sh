@@ -371,6 +371,11 @@ handle_special_modem_name()
 		modem_name="fm350-gl"
 	}
 	
+	#NL668_CN LTE Module
+	[[ "$modem_name" = *"nl668_cn"* ]] && {
+		modem_name="nl668-cn"
+	}
+	
 	#FL860-GL LTE Module
 	[[ "$modem_name" = *"l860"* ]] && {
 		modem_name="l860-gl"
